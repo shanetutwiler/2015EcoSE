@@ -1,3 +1,6 @@
+#Author:  M. Shane Tutwiler
+# Harvard Graduate School of Education
+
 # Individual Growth Curve models (Singer & Willett, 2003) predicting student self-efficacy
 
 nlc <- read.delim("C:/Users/mst216.AD/Documents/EcoMUVE analyses/nlc.txt")
