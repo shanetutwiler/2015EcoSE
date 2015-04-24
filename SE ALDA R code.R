@@ -1,3 +1,5 @@
+# Individual Growth Curve models (Singer & Willett, 2003) predicting student self-efficacy
+
 nlc <- read.delim("C:/Users/mst216.AD/Documents/EcoMUVE analyses/nlc.txt")
 
 nlc$pr <- nlc$pi
@@ -11,13 +13,16 @@ detach(nlc)
 
 View(nlc)
 
+#create a pre-intervention science identity variable
 nlc.t0 <- subset(nlc, time == 0, select = c(id, ident))
 View(nlc.t0)
 
 nlc.new <- merge(nlc, nlc.t0, by = "id")
 View(nlc.new)
 
-library("nlme", lib.loc="C:/Program Files/R/R-3.2.0/library")
+library(nlme)
+
+#Fit individual growth models
 
 se.m1 <- lme(se~time, data=nlc, random=~time|id, method="ML") #base longitudinal model
 
@@ -55,18 +60,9 @@ se.m9 <- lme(se~time + female + time:teach.1 + time.post.ecomuve + time.post.eco
 
 anova(se.m8, se.m9)
 
-#FINAL MODEL: M8
-#Level 1: SEij = B0 + B1*TIMEij + B2*TIME.POST.ECOMUVEij + eij
-#Level 2: B0 = g00 + g01*FEMALEi + u0i
-#Level 2: B1 = g10 + g11*TEACH.1i + u1i
-#Level 2: B2  = g20 +  u2i
-
-
 #Time vectors for plots
 visit <- c(0,1,2)
 post.visit <- c(0,0,1)
-
-
 
 #Growth model of prototypical student, controling for gender and teacher effects.
 #fixef.8 <- fixef(se.m8)
@@ -123,7 +119,7 @@ summary(nlc.new$female)
 summary(nlc.new$ident.y)
 sd(nlc.new$ident.y)
 
-#Growth model of prototypical student, controling for gender, interest, and teacher effects.
+#Growth model of prototypical student, controling for gender, ident, and teacher effects.
 fixef.8c <- fixef(se.m8c) #fetch fixed effects from final model
 fixef.8c
 fit.8c <- fixef.8c[[1]] + visit[1:3]*fixef.8c[[2]] + 2.971*fixef.8c[[3]] + 0.5304*fixef.8c[[4]] + post.visit[1:3]*fixef.8c[[5]] + visit[1:3]*0.4674*fixef.8c[[6]] + visit[1:3]*2.971*fixef.8c[[7]] #full model
@@ -139,6 +135,7 @@ axis(1, at=c(0,1,2))
 
 plot(visit[1:3], fit.8c.hi, type="b", pch=0, ylim =c(0,6), xlab= "Pre=0, Post EcoMUVE=1, Post EcoMOBILE=2", ylab="Model estimated self-efficacy", xaxt="n")
 lines(visit[1:3], fit.8c.lo, type="b", pch=17)
-title("Individual Growth Model \n Student Self-Efficacy \n (by Pre Science Interest)")
-legend(0, 3, c("High Interest", "Low Interest"), pch=c(0,17))
+title("Individual Growth Model \n Student Self-Efficacy \n (by Pre Science Identity)")
+legend(0, 3, c("High Ident", "Low Ident"), pch=c(0,17))
 axis(1, at=c(0,1,2))
+
